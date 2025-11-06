@@ -239,8 +239,11 @@ if metrics is None:
     st.info("No saved model metrics found. Run training (`python src/models/train_models.py`) to produce metrics in `outputs/model_results.json`.")
 else:
     # metrics expected as dict: model_name -> { 'f1':..., 'report': {...} }
+    # map short keys to readable names (ensure xgb shows as XGBoost)
+    pretty = {"logreg": "Logistic Regression", "rf": "Random Forest", "xgb": "XGBoost"}
     rows = []
     for name, m in metrics.items():
+        display_name = pretty.get(name, name)
         report = m.get("report") if isinstance(m, dict) else None
         f1 = m.get("f1") if isinstance(m, dict) else None
         acc = None
@@ -256,7 +259,17 @@ else:
             if isinstance(cls1, dict):
                 prec1 = cls1.get("precision")
                 rec1 = cls1.get("recall")
-        rows.append({"model": name, "accuracy": acc, "f1": f1, "precision_pos": prec1, "recall_pos": rec1})
+        # format numeric values for readability
+        def fmt(x):
+            try:
+                return round(float(x), 3)
+            except Exception:
+                return x
+
+        rows.append({"model": display_name, "accuracy": fmt(acc), "f1": fmt(f1), "precision_pos": fmt(prec1), "recall_pos": fmt(rec1)})
     import pandas as _pd
     df_metrics = _pd.DataFrame(rows).set_index("model")
+    # sort by f1 descending if available
+    if "f1" in df_metrics.columns:
+        df_metrics = df_metrics.sort_values(by="f1", ascending=False)
     st.table(df_metrics)
