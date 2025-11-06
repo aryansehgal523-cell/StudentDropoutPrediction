@@ -10,6 +10,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
+from xgboost import XGBClassifier
 from sklearn.model_selection import GridSearchCV
 
 from sklearn.metrics import classification_report
@@ -44,6 +45,21 @@ grid = GridSearchCV(clf, params, cv=3, scoring="f1", n_jobs=-1)
 grid.fit(X_train, y_train)
 models["rf"] = grid.best_estimator_
 print("best rf:", grid.best_params_)
+
+print("Training XGBoost...")
+# handle class imbalance by setting scale_pos_weight if appropriate
+try:
+    neg = (y_train == 0).sum()
+    pos = (y_train == 1).sum()
+    scale_pos_weight = float(neg) / float(pos) if pos > 0 else 1.0
+except Exception:
+    scale_pos_weight = 1.0
+clf = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
+params = {"n_estimators": [100], "max_depth": [3, 5], "scale_pos_weight": [scale_pos_weight]}
+grid = GridSearchCV(clf, params, cv=3, scoring="f1", n_jobs=-1)
+grid.fit(X_train, y_train)
+models["xgb"] = grid.best_estimator_
+print("best xgb:", grid.best_params_)
 
 # Evaluate on validation set and pick best by F1
 best_name = None
