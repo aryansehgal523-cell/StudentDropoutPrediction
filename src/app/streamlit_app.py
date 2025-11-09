@@ -310,7 +310,7 @@ with col2:
         )
         
         st.markdown("<br>", unsafe_allow_html=True)
-        submit = st.form_submit_button("🔮 Predict Dropout Risk", use_container_width=True)
+        submit = st.form_submit_button("🔮 Predict Dropout Risk", width="stretch")
 
 if submit:
     inp = {
@@ -391,7 +391,11 @@ if submit:
                     </div>
                     """, unsafe_allow_html=True)
         except Exception as e:
-            st.error(f"❌ Unable to preprocess input: {str(e)}")
+            import traceback
+            st.error(f"❌ Unable to process prediction: {str(e)}")
+            with st.expander("🔍 Error Details"):
+                st.code(traceback.format_exc())
+                st.info("💡 **Tip**: Try retraining the models with: `python src/models/train_models.py`")
 
 # --- Model performance section ---
 st.markdown("<br><br>", unsafe_allow_html=True)
@@ -441,7 +445,7 @@ else:
     # Display in centered column
     col_left, col_center, col_right = st.columns([0.5, 2, 0.5])
     with col_center:
-        st.dataframe(df_metrics, use_container_width=True)
+        st.dataframe(df_metrics, width="stretch")
         
         # Add a simple bar chart for F1 scores
         if "F1 Score" in df_metrics.columns:
