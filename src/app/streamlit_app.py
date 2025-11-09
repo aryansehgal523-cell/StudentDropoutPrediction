@@ -27,12 +27,16 @@ st.set_page_config(
     }
 )
 
-# Custom CSS for vibrant, attractive UI
+# Custom CSS for dark/black theme
 st.markdown("""
 <style>
-    /* Main background gradient */
+    /* Main dark background */
     .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #0a0a0a;
+        background-image: 
+            radial-gradient(at 40% 20%, rgba(30, 30, 30, 0.5) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(20, 20, 20, 0.5) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(15, 15, 15, 0.5) 0px, transparent 50%);
     }
     
     /* Title styling */
@@ -41,108 +45,153 @@ st.markdown("""
         font-size: 3rem !important;
         font-weight: 700 !important;
         text-align: center !important;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         margin-bottom: 2rem !important;
     }
     
     /* Section headers */
     h2, h3 {
-        color: #ffffff !important;
+        color: #e0e0e0 !important;
         font-weight: 600 !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     }
     
-    /* Form container with glass effect */
+    /* Form container with dark theme */
     .stForm {
-        background: rgba(255, 255, 255, 0.95) !important;
+        background: rgba(20, 20, 20, 0.8) !important;
         border-radius: 20px !important;
         padding: 2rem !important;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
-        backdrop-filter: blur(4px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(60, 60, 60, 0.5) !important;
     }
     
     /* Input labels */
     .stForm label {
-        color: #2d3748 !important;
+        color: #e0e0e0 !important;
         font-weight: 600 !important;
         font-size: 1.1rem !important;
     }
     
     /* Buttons */
     .stButton button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
         color: white !important;
         font-weight: 600 !important;
         font-size: 1.2rem !important;
         padding: 0.75rem 2rem !important;
         border-radius: 50px !important;
-        border: none !important;
-        box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4) !important;
+        border: 1px solid #444 !important;
+        box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.4) !important;
         transition: all 0.3s ease !important;
     }
     
     .stButton button:hover {
         transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.6) !important;
+        background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%) !important;
+        box-shadow: 0 6px 20px 0 rgba(255, 255, 255, 0.1) !important;
     }
     
     /* Metrics container */
     [data-testid="stMetricValue"] {
         font-size: 2rem !important;
         font-weight: 700 !important;
+        color: #ffffff !important;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: #b0b0b0 !important;
     }
     
     /* Info/warning/error boxes */
     .stAlert {
         border-radius: 15px !important;
         border: none !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
     }
     
     /* Success message */
     .stSuccess {
-        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%) !important;
-        color: #065f46 !important;
+        background: rgba(16, 185, 129, 0.2) !important;
+        color: #10b981 !important;
         font-weight: 600 !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
     }
     
     /* Error message */
     .stError {
-        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
-        color: #7f1d1d !important;
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #ef4444 !important;
         font-weight: 600 !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    }
+    
+    /* Warning message */
+    .stWarning {
+        background: rgba(245, 158, 11, 0.2) !important;
+        color: #f59e0b !important;
+        border: 1px solid rgba(245, 158, 11, 0.3) !important;
+    }
+    
+    /* Info message */
+    .stInfo {
+        background: rgba(59, 130, 246, 0.2) !important;
+        color: #3b82f6 !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
     }
     
     /* Tables */
     table {
-        background: rgba(255, 255, 255, 0.95) !important;
+        background: rgba(20, 20, 20, 0.8) !important;
         border-radius: 15px !important;
         overflow: hidden !important;
+        color: #e0e0e0 !important;
     }
     
     thead tr th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: rgba(40, 40, 40, 0.9) !important;
         color: white !important;
         font-weight: 700 !important;
         padding: 1rem !important;
+        border-bottom: 2px solid #444 !important;
+    }
+    
+    tbody tr {
+        border-bottom: 1px solid #333 !important;
     }
     
     tbody tr:hover {
-        background: rgba(102, 126, 234, 0.1) !important;
+        background: rgba(60, 60, 60, 0.3) !important;
     }
     
     /* Divider */
     hr {
         border: none !important;
-        height: 2px !important;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent) !important;
+        height: 1px !important;
+        background: linear-gradient(90deg, transparent, rgba(100, 100, 100, 0.4), transparent) !important;
         margin: 2rem 0 !important;
     }
     
     /* Card effect for content */
     .element-container {
         margin-bottom: 1rem;
+    }
+    
+    /* Dataframe styling */
+    [data-testid="stDataFrame"] {
+        background: rgba(20, 20, 20, 0.8) !important;
+        border-radius: 10px !important;
+    }
+    
+    /* Slider and input styling */
+    .stSlider > div > div > div {
+        background: #2d2d2d !important;
+    }
+    
+    .stNumberInput > div > div > input,
+    .stSelectbox > div > div > select {
+        background: rgba(30, 30, 30, 0.8) !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #444 !important;
     }
 </style>
 """, unsafe_allow_html=True)
