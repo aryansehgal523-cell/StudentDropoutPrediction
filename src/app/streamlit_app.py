@@ -18,7 +18,134 @@ MODEL_PATH = OUT / "best_model.joblib"
 PREPROCESSOR_PATH = PROC / "preprocessor.joblib"
 FEATURES_PATH = PROC / "feature_names.csv"
 
-st.set_page_config(page_title="Student Dropout Predictor", layout="wide")
+st.set_page_config(
+    page_title="🎓 Student Dropout Predictor",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'About': "# Student Dropout Prediction ML App\nBuilt with Streamlit, scikit-learn, and XGBoost"
+    }
+)
+
+# Custom CSS for vibrant, attractive UI
+st.markdown("""
+<style>
+    /* Main background gradient */
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* Title styling */
+    h1 {
+        color: #ffffff !important;
+        font-size: 3rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 2rem !important;
+    }
+    
+    /* Section headers */
+    h2, h3 {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    /* Form container with glass effect */
+    .stForm {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-radius: 20px !important;
+        padding: 2rem !important;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+        backdrop-filter: blur(4px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    }
+    
+    /* Input labels */
+    .stForm label {
+        color: #2d3748 !important;
+        font-weight: 600 !important;
+        font-size: 1.1rem !important;
+    }
+    
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        font-size: 1.2rem !important;
+        padding: 0.75rem 2rem !important;
+        border-radius: 50px !important;
+        border: none !important;
+        box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stButton button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.6) !important;
+    }
+    
+    /* Metrics container */
+    [data-testid="stMetricValue"] {
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Info/warning/error boxes */
+    .stAlert {
+        border-radius: 15px !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Success message */
+    .stSuccess {
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%) !important;
+        color: #065f46 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Error message */
+    .stError {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+        color: #7f1d1d !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Tables */
+    table {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-radius: 15px !important;
+        overflow: hidden !important;
+    }
+    
+    thead tr th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: 700 !important;
+        padding: 1rem !important;
+    }
+    
+    tbody tr:hover {
+        background: rgba(102, 126, 234, 0.1) !important;
+    }
+    
+    /* Divider */
+    hr {
+        border: none !important;
+        height: 2px !important;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent) !important;
+        margin: 2rem 0 !important;
+    }
+    
+    /* Card effect for content */
+    .element-container {
+        margin-bottom: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Use the project root detected from this file to locate data/artifacts so the
 # app works both in local clones and different runtime containers.
@@ -141,7 +268,11 @@ IMPORTANT_FEATURES = [
     "Tuition fees up to date",
 ]
 
-st.title("Student Dropout Predictor")
+st.markdown("<h1>🎓 Student Dropout Predictor</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: white; font-size: 1.2rem; margin-bottom: 2rem;'>Predict student dropout risk using advanced machine learning models</p>", unsafe_allow_html=True)
+
+# Create columns for better layout
+col1, col2, col3 = st.columns([1, 2, 1])
 
 FEATURES = [
     "Age at enrollment",
@@ -152,30 +283,34 @@ FEATURES = [
 
 ranges = {f: get_ranges(raw_df, f) for f in COMPACT_FEATURES}
 
-with st.form("very_minimal_form"):
-    age = st.slider(
-        "Age at enrollment",
-        min_value=int(ranges["Age at enrollment"][0]),
-        max_value=int(ranges["Age at enrollment"][1]),
-        value=int(ranges["Age at enrollment"][2]),
-    )
-    adm = st.slider(
-        "Admission grade",
-        float(ranges["Admission grade"][0]),
-        float(ranges["Admission grade"][1]),
-        float(ranges["Admission grade"][2]),
-    )
-    cu1 = st.number_input(
-        "Curricular units 1st sem (approved)",
-        min_value=int(ranges["Curricular units 1st sem (approved)"][0]),
-        max_value=int(ranges["Curricular units 1st sem (approved)"][1]),
-        value=int(ranges["Curricular units 1st sem (approved)"][2]),
-    )
-    tuition = st.selectbox(
-        "Tuition fees up to date",
-        options=sorted(raw_df["Tuition fees up to date"].dropna().unique() if raw_df is not None and "Tuition fees up to date" in raw_df.columns else ["Yes", "No"]),
-    )
-    submit = st.form_submit_button("Predict")
+with col2:
+    with st.form("very_minimal_form"):
+        st.markdown("### 📝 Student Information")
+        age = st.slider(
+            "👤 Age at enrollment",
+            min_value=int(ranges["Age at enrollment"][0]),
+            max_value=int(ranges["Age at enrollment"][1]),
+            value=int(ranges["Age at enrollment"][2]),
+        )
+        adm = st.slider(
+            "📊 Admission grade",
+            float(ranges["Admission grade"][0]),
+            float(ranges["Admission grade"][1]),
+            float(ranges["Admission grade"][2]),
+        )
+        cu1 = st.number_input(
+            "✅ Curricular units 1st sem (approved)",
+            min_value=int(ranges["Curricular units 1st sem (approved)"][0]),
+            max_value=int(ranges["Curricular units 1st sem (approved)"][1]),
+            value=int(ranges["Curricular units 1st sem (approved)"][2]),
+        )
+        tuition = st.selectbox(
+            "💰 Tuition fees up to date",
+            options=sorted(raw_df["Tuition fees up to date"].dropna().unique() if raw_df is not None and "Tuition fees up to date" in raw_df.columns else ["Yes", "No"]),
+        )
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        submit = st.form_submit_button("🔮 Predict Dropout Risk", use_container_width=True)
 
 if submit:
     inp = {
@@ -190,7 +325,7 @@ if submit:
         df_in[c] = pd.to_numeric(df_in[c], errors="coerce")
 
     if model is None or preprocessor is None:
-        st.warning("Model or preprocessor not found. Run training first: python src/models/train_models.py")
+        st.warning("⚠️ Model or preprocessor not found. Run training first: `python src/models/train_models.py`")
     else:
         try:
             # Ensure the input contains the exact columns the preprocessor was fitted on.
@@ -224,19 +359,48 @@ if submit:
             if hasattr(model, "predict_proba"):
                 prob = model.predict_proba(Xp)[:, 1][0]
             pred = int(model.predict(Xp)[0])
-            st.metric("Dropout probability", f"{prob:.2%}" if prob is not None else "N/A")
-            if pred == 1:
-                st.error("Prediction: Dropout")
-            else:
-                st.success("Prediction: No Dropout")
-        except Exception:
-            st.error("Unable to preprocess input — please ensure the dataset and preprocessor were created by the project's pipeline.")
+            
+            # Display results in centered column with nice formatting
+            st.markdown("<br>", unsafe_allow_html=True)
+            with col2:
+                if prob is not None:
+                    col_a, col_b = st.columns(2)
+                    with col_a:
+                        st.metric("📊 Dropout Probability", f"{prob:.1%}")
+                    with col_b:
+                        st.metric("🎯 Risk Level", "High" if prob > 0.5 else "Low")
+                
+                if pred == 1:
+                    st.error("⚠️ **Prediction: Student at Risk of Dropout**")
+                    st.markdown("""
+                    <div style='background: rgba(254,202,202,0.2); padding: 1rem; border-radius: 10px; margin-top: 1rem;'>
+                        <p style='color: white; margin: 0;'>
+                            <strong>Recommendation:</strong> Consider providing additional support such as tutoring, 
+                            counseling, or financial assistance to help retain this student.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.success("✅ **Prediction: Student Expected to Continue**")
+                    st.markdown("""
+                    <div style='background: rgba(167,243,208,0.2); padding: 1rem; border-radius: 10px; margin-top: 1rem;'>
+                        <p style='color: white; margin: 0;'>
+                            <strong>Status:</strong> This student shows positive indicators for academic continuation. 
+                            Continue monitoring progress and maintain current support levels.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"❌ Unable to preprocess input: {str(e)}")
 
 # --- Model performance section ---
+st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("---")
-st.header("Model performance")
+st.markdown("<h2 style='text-align: center;'>📈 Model Performance Metrics</h2>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: white; margin-bottom: 2rem;'>Comparison of different machine learning models</p>", unsafe_allow_html=True)
+
 if metrics is None:
-    st.info("No saved model metrics found. Run training (`python src/models/train_models.py`) to produce metrics in `outputs/model_results.json`.")
+    st.info("ℹ️ No saved model metrics found. Run training (`python src/models/train_models.py`) to produce metrics in `outputs/model_results.json`.")
 else:
     # metrics expected as dict: model_name -> { 'f1':..., 'report': {...} }
     # map short keys to readable names (ensure xgb shows as XGBoost)
@@ -266,10 +430,30 @@ else:
             except Exception:
                 return x
 
-        rows.append({"model": display_name, "accuracy": fmt(acc), "f1": fmt(f1), "precision_pos": fmt(prec1), "recall_pos": fmt(rec1)})
+        rows.append({"Model": display_name, "Accuracy": fmt(acc), "F1 Score": fmt(f1), "Precision": fmt(prec1), "Recall": fmt(rec1)})
+    
     import pandas as _pd
-    df_metrics = _pd.DataFrame(rows).set_index("model")
+    df_metrics = _pd.DataFrame(rows).set_index("Model")
     # sort by f1 descending if available
-    if "f1" in df_metrics.columns:
-        df_metrics = df_metrics.sort_values(by="f1", ascending=False)
-    st.table(df_metrics)
+    if "F1 Score" in df_metrics.columns:
+        df_metrics = df_metrics.sort_values(by="F1 Score", ascending=False)
+    
+    # Display in centered column
+    col_left, col_center, col_right = st.columns([0.5, 2, 0.5])
+    with col_center:
+        st.dataframe(df_metrics, use_container_width=True)
+        
+        # Add a simple bar chart for F1 scores
+        if "F1 Score" in df_metrics.columns:
+            st.markdown("<br>", unsafe_allow_html=True)
+            fig, ax = plt.subplots(figsize=(10, 4))
+            colors = ['#667eea', '#764ba2', '#f093fb']
+            df_metrics['F1 Score'].plot(kind='barh', ax=ax, color=colors[:len(df_metrics)])
+            ax.set_xlabel('F1 Score', fontweight='bold', fontsize=12)
+            ax.set_title('Model Comparison by F1 Score', fontweight='bold', fontsize=14, pad=20)
+            ax.grid(axis='x', alpha=0.3)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: rgba(255,255,255,0.7); font-size: 0.9rem;'>Built with ❤️ using Streamlit, scikit-learn, and XGBoost</p>", unsafe_allow_html=True)
